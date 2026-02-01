@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PureCanvas Pro | Secure Content Creation</title>
+    <style>
+        :root { --primary: #6366f1; --stripe: #635bff; --bg: #0f172a; --panel: #1e293b; }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; -webkit-font-smoothing: antialiased; }
+        .app-container { display: flex; gap: 30px; max-width: 1200px; width: 100%; margin-top: 20px; }
+        
+        #controls { 
+            background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; gap: 15px; width: 340px; flex-shrink: 0; height: fit-content;
+        }
+        
+        .preview-area { flex-grow: 1; display: flex; justify-content: center; align-items: flex-start; }
+        canvas { border-radius: 16px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); max-width: 100%; height: auto; transition: 0.3s ease; background: #000; }
+        
+        textarea { width: 100%; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; height: 100px; font-family: inherit; font-size: 0.9rem; }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        .btn { padding: 12px; background: var(--primary); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 0.9rem; }
+        .btn-stripe { background: var(--stripe); margin-top: 10px; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-success { background: transparent; border: 1px solid #22c55e; color: #22c55e; }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        
+        label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; font-weight: 700; }
+        select, input { padding: 10px; border-radius: 8px; background: #334155; color: white; border: none; font-size: 0.9rem; }
+        
+        .footer-note { font-size: 0.6rem; color: #64748b; margin-top: 12px; line-height: 1.4; text-align: center; }
+
+        @media (max-width: 900px) { .app-container { flex-direction: column; align-items: center; } #controls { width: 100%; box-sizing: border-box; } }
+    </style>
+</head>
+<body>
+
+    <header style="text-align: center;">
+        <h1 style="margin:0; background: linear-gradient(to right, #6366f1, #00f2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; font-size: 2.5rem;">PURECANVAS PRO</h1>
+        <p style="color: #64748b; margin-top: 5px;">Secure, browser-based content design.</p>
+    </header>
+    
+    <div class="app-container">
+        <div id="controls">
+            <div class="control-group">
+                <label>Text Content</label>
+                <textarea id="textInput">"The best way to predict the future is to invent it."&#10;— Alan Kay</textarea>
+            </div>
+
+            <div class="control-group">
+                <label>Layout Presets</label>
+                <div class="row">
+                    <button class="btn btn-outline" onclick="setLayout(1080, 1080)">Square (Post)</button>
+                    <button class="btn btn-outline" onclick="setLayout(1080, 1920)">Story (9:16)</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="control-group">
+                    <label>Theme</label>
+                    <select id="themeSelect">
+                        <option value="glass">Glassmorphism</option>
+                        <option value="orange">Orange Sunrise</option>
+                        <option value="space">Space Age</option>
+                        <option value="midnight">Midnight Navy</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Typography</label>
+                    <select id="fontSelect">
+                        <option value="system-ui">Modern Sans</option>
+                        <option value="Georgia, serif">Classic Serif</option>
+                        <option value="'Courier New', monospace">Retro Mono</option>
+                        <option value="Impact, sans-serif">Bold Impact</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="control-group">
+                    <label>Canvas Background</label>
+                    <input type="color" id="bgColor" value="#0f172a" style="width:100%; height:42px; cursor:pointer;">
+                </div>
+                <div class="control-group">
+                    <label>Font Size</label>
+                    <input type="number" id="fontSize" value="55" min="20" max="150">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Brand Logo</label>
+                <input type="file" id="logoUpload" accept="image/*">
+            </div>
+
+            <div class="control-group" style="gap: 8px;">
+                <button class="btn" onclick="downloadImage()">Download HD PNG</button>
+                <button class="btn btn-outline" onclick="copyToClipboard()">Copy to Clipboard</button>
+                <button class="btn btn-success" onclick="saveBrandKit()">Save Brand Settings</button>
+            </div>
+
+            <div class="stripe-section" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <label>Support this Project</label>
+                <a href="https://buy.stripe.com/4gM3cwd2W47xgTcaiuds400" target="_blank" class="btn btn-stripe">
+                    <svg width="14" height="14" viewBox="0 0 448 512" fill="white"><path d="M448 80v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48zM153.1 330.1c0 30.5 25.4 57.6 62.4 57.6 37 0 62.4-27.1 62.4-57.6 0-31.4-24.9-56.1-62.4-56.1-37 0-62.4 24.7-62.4 56.1zM215.5 128c-37 0-62.4 24.7-62.4 56.1 0 30.5 25.4 57.6 62.4 57.6 37 0 62.4-27.1 62.4-57.6 0-31.4-25.4-56.1-62.4-56.1z"/></svg>
+                    Pay via Stripe
+                </a>
+                <p class="footer-note">
+                    Payments processed securely by Stripe; please refer to their Privacy Policy for details. We do not store personal data. Browser-based design tool.
+                </p>
+            </div>
+        </div>
+
+        <div class="preview-area">
+            <canvas id="preview" width="1080" height="1080"></canvas>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('preview');
+    const ctx = canvas.getContext('2d');
+    const textInput = document.getElementById('textInput');
+    const themeSelect = document.getElementById('themeSelect');
+    const fontSelect = document.getElementById('fontSelect');
+    const bgColor = document.getElementById('bgColor');
+    const fontSize = document.getElementById('fontSize');
+    const logoUpload = document.getElementById('logoUpload');
+
+    let uploadedLogo = new Image();
+    
+    window.onload = () => {
+        const savedColor = localStorage.getItem('pc_bgColor');
+        if (savedColor) bgColor.value = savedColor;
+        const savedLogo = localStorage.getItem('pc_brandLogo');
+        if (savedLogo) { uploadedLogo.src = savedLogo; uploadedLogo.onload = draw; }
+        draw();
+    };
+
+    function saveBrandKit() {
+        localStorage.setItem('pc_bgColor', bgColor.value);
+        if (uploadedLogo.src) localStorage.setItem('pc_brandLogo', uploadedLogo.src);
+        alert("Brand kit saved to local storage!");
+    }
+
+    logoUpload.onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => { uploadedLogo.src = ev.target.result; uploadedLogo.onload = draw; };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    function setLayout(w, h) {
+        canvas.width = w; canvas.height = h;
+        draw();
+    }
+
+    async function copyToClipboard() {
+        try {
+            const blob = await new Promise(res => canvas.toBlob(res));
+            const item = new ClipboardItem({ "image/png": blob });
+            await navigator.clipboard.write([item]);
+            alert("Copied to clipboard!");
+        } catch (err) { alert("Copy failed. Try Download PNG."); }
+    }
+
+    function draw() {
+        const padding = 120;
+        
+        // Background
+        ctx.fillStyle = bgColor.value;
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+
+        if (themeSelect.value !== 'glass') {
+            const grd = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            if(themeSelect.value === 'orange') { grd.addColorStop(0, '#ff8c00'); grd.addColorStop(1, '#ff0080'); }
+            else if(themeSelect.value === 'space') { grd.addColorStop(0, '#0f0c29'); grd.addColorStop(1, '#24243e'); }
+            else if(themeSelect.value === 'midnight') { grd.addColorStop(0, '#021B79'); grd.addColorStop(1, '#0575E6'); }
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Glassmorphism Card
+        const cardM = 80;
+        ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(cardM, cardM, canvas.width - cardM*2, canvas.height - cardM*2, 40);
+        ctx.fill(); ctx.stroke();
+
+        // Watermark
+        if (uploadedLogo.src) {
+            const lS = 120;
+            ctx.globalAlpha = 0.9;
+            ctx.drawImage(uploadedLogo, canvas.width/2 - lS/2, cardM + 60, lS, lS);
+            ctx.globalAlpha = 1.0;
+        }
+
+        // Text
+        const fSize = parseInt(fontSize.value);
+        ctx.fillStyle = "white"; ctx.textAlign = "center";
+        ctx.font = `bold ${fSize}px ${fontSelect.value}`;
+        
+        const words = textInput.value.split(' ');
+        let lines = []; let currentLine = '';
+        const maxWidth = canvas.width - (padding * 2);
+
+        words.forEach(word => {
+            let test = currentLine + word + ' ';
+            if (ctx.measureText(test).width > maxWidth) {
+                lines.push(currentLine); currentLine = word + ' ';
+            } else { currentLine = test; }
+        });
+        lines.push(currentLine);
+
+        let startY = (canvas.height / 2) - ((lines.length - 1) * (fSize * 1.4) / 2);
+        lines.forEach(line => {
+            ctx.fillText(line.trim(), canvas.width / 2, startY);
+            startY += fSize * 1.4;
+        });
+    }
+
+    function downloadImage() {
+        const link = document.createElement('a');
+        link.download = 'purecanvas-pro.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+    }
+
+    [textInput, themeSelect, fontSelect, bgColor, fontSize].forEach(el => el.addEventListener('input', draw));
+    draw();
+</script>
+</body>
+</html>
