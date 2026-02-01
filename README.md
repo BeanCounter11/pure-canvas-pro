@@ -22,9 +22,8 @@ PureCanvas Pro is built with a **Privacy-First** architecture.
 - **Storage:** LocalStorage API for persistence.
 
 ## 💳 Support the Developer
-If this tool saves you time, consider supporting the project. Payments are processed securely via Stripe.
+If this tool saves you time, consider supporting the project (link in the tool). Payments are processed securely via Stripe.
 
-[Support via Stripe](https://buy.stripe.com/4gM3cwd2W47xgTcaiuds400)
 
 ---
 *Note: This tool is served via HTTPS on GitHub Pages. For optimal experience, use a modern browser (Chrome, Safari, Edge).*
